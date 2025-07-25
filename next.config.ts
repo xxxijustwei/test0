@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   env: {
     GIT_COMMIT: execSync("git rev-parse HEAD").toString().trim(),
     SENTRY_DSN: process.env.SENTRY_DSN,
+    DATADOG_APPLICATION_ID: process.env.DATADOG_APPLICATION_ID,
+    DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
   }
 };
 

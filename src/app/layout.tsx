@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { ThemeProvider } from "next-themes";
+import { DatadogProvider } from "./DatadogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <DatadogProvider>
+            {children}
+          </DatadogProvider>
         </ThemeProvider>
       </body>
     </html>
