@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   env: {
     GIT_COMMIT: execSync("git rev-parse HEAD").toString().trim(),
+    SENTRY_DSN: process.env.SENTRY_DSN,
   }
 };
 
