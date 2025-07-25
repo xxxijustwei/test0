@@ -31,12 +31,6 @@ export function trackRequest(pathname: string, method: string = "GET") {
     return;
   }
 
-  datadogRum.addAction("request", {
-    count: 1,
-    path: pathname,
-    method: method,
-  });
-
   datadogRum.addAction("nuts.request.count", {
     type: "custom",
     name: "nuts.request.count",
