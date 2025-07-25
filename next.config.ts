@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
     SENTRY_DSN: process.env.SENTRY_DSN,
     DATADOG_APPLICATION_ID: process.env.DATADOG_APPLICATION_ID,
     DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
-  }
+  },
+  serverExternalPackages: ["import-in-the-middle", "require-in-the-middle"],
 };
 
 export default withSentryConfig(nextConfig, {
