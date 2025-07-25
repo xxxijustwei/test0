@@ -19,7 +19,8 @@ RUN pnpm install --frozen-lockfile
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install pnpm
+# Install git and pnpm
+RUN apk add --no-cache git
 RUN corepack enable
 RUN corepack prepare pnpm@latest --activate
 
@@ -52,7 +53,7 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["pnpm", "start"]
