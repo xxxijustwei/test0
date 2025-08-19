@@ -109,7 +109,71 @@ For the CI pipeline to work, configure these secrets in your GitHub repository:
 
 The application is deployed to Kubernetes using the manifests in the `k8s/` directory.
 
-### Prerequisites for K8s Deployment
+### Local Kubernetes Deployment with OrbStack
+
+#### Prerequisites
+
+1. Install OrbStack (https://orbstack.dev/)
+2. Enable Kubernetes in OrbStack settings
+3. AWS CLI configured with ECR access
+
+#### Deployment Steps
+
+1. **Login to AWS ECR**:
+```bash
+# Replace <AWS_ACCOUNT_ID> with your AWS account ID
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+```
+
+2. **Create ECR secret for Kubernetes**:
+```bash
+# Replace <AWS_ACCOUNT_ID> with your AWS account ID
+aws ecr get-login-password --region us-east-1 | kubectl create secret docker-registry ecr-secret \
+  --docker-server=<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com \
+  --docker-username=AWS \
+  --docker-password=$(aws ecr get-login-password --region us-east-1)
+```
+
+3. **Deploy to OrbStack K8s**:
+```bash
+# Apply deployment and service
+kubectl apply -f k8s/deployment.yml
+kubectl apply -f k8s/service.yml
+
+# Wait for deployment to be ready
+kubectl rollout status deployment/app-deployment --timeout=300s
+```
+
+4. **Access the application**:
+```bash
+# Option 1: Use port forwarding (recommended)
+kubectl port-forward service/app-service 3000:80
+
+# Option 2: Get LoadBalancer IP (OrbStack provides this)
+kubectl get service app-service
+```
+
+The application will be available at:
+- Port Forward: http://localhost:3000
+- LoadBalancer: http://<EXTERNAL-IP> (shown in service status)
+
+#### Using the Deploy Script
+
+A convenience script is provided for deployment:
+
+```bash
+./deploy-k8s.sh
+```
+
+This script will:
+- Login to AWS ECR
+- Pull the latest image
+- Deploy to OrbStack Kubernetes
+- Show deployment status and access information
+
+### Production K8s Deployment (AWS EKS)
+
+#### Prerequisites for EKS Deployment
 
 1. Configure kubectl to connect to your cluster:
 ```bash
@@ -118,7 +182,7 @@ aws eks update-kubeconfig --name your-cluster-name --region us-east-1
 
 2. Ensure the Docker image is available in ECR (built by CI pipeline)
 
-### Applying K8s Manifests
+#### Applying K8s Manifests
 
 Deploy the application to Kubernetes:
 
@@ -131,7 +195,7 @@ kubectl apply -f k8s/deployment.yml
 kubectl apply -f k8s/service.yml
 ```
 
-### Verifying Deployment
+#### Verifying Deployment
 
 ```bash
 # Check deployment status
@@ -179,6 +243,19 @@ The application includes:
 
 ### Troubleshooting
 
+#### Common Issues
+
+**ImagePullBackOff Error**:
+- Ensure ECR secret is created: `kubectl get secret ecr-secret`
+- Verify AWS credentials: `aws ecr get-login-password --region us-east-1`
+- Check deployment has imagePullSecrets configured
+
+**LoadBalancer IP not accessible**:
+- OrbStack uses special IP range (198.19.x.x)
+- Use port-forward instead: `kubectl port-forward service/app-service 3000:80`
+- Try accessing via localhost instead of LoadBalancer IP
+
+**General Debugging**:
 ```bash
 # View pod logs
 kubectl logs -l app=app
@@ -188,6 +265,14 @@ kubectl describe pod <pod-name>
 
 # Check deployment rollout status
 kubectl rollout status deployment/app-deployment
+
+# Delete and recreate ECR secret if needed
+kubectl delete secret ecr-secret
+# Replace <AWS_ACCOUNT_ID> with your AWS account ID
+aws ecr get-login-password --region us-east-1 | kubectl create secret docker-registry ecr-secret \
+  --docker-server=<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com \
+  --docker-username=AWS \
+  --docker-password=$(aws ecr get-login-password --region us-east-1)
 ```
 
 ## Project Structure
