@@ -228,7 +228,7 @@ To update the deployment with a new image:
 
 ```bash
 # Update with specific image tag
-kubectl set image deployment/app-deployment app=424071944879.dkr.ecr.us-east-1.amazonaws.com/next-app:new-tag
+kubectl set image deployment/app-deployment app=<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/next-app:new-tag
 
 # Or edit the deployment directly
 kubectl edit deployment app-deployment
