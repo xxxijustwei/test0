@@ -14,9 +14,12 @@ spec:
       labels:
         app: app
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: app
-        image: 424071944879.dkr.ecr.us-east-1.amazonaws.com/next-app:latest
+        # Replace with your ECR repository URL
+        image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/next-app:latest
         ports:
         - containerPort: 3000
         livenessProbe:
