@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-          attribute="class"
+          attribute={['class', 'data-theme']}
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
