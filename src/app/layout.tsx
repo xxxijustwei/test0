@@ -30,14 +30,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-          attribute={['class', 'data-theme']}
+          attribute={["class", "data-theme"]}
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <DatadogProvider>
-            {children}
-          </DatadogProvider>
+          <DatadogProvider>{children}</DatadogProvider>
         </ThemeProvider>
       </body>
     </html>
